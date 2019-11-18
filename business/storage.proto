@@ -1,0 +1,18 @@
+syntax = "proto3";
+package business;
+
+service Storage{
+    rpc Get(File) returns (LoremResponse) {}
+    rpc Get(LoremRequest) returns (LoremResponse) {}
+}
+
+message LoremRequest {
+    string requestType = 1;
+    int32 min = 2;
+    int32 max = 3;
+}
+
+message LoremResponse {
+    string message = 1;
+    string err = 2;
+}
