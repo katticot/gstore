@@ -2,17 +2,21 @@ syntax = "proto3";
 package business;
 
 service Storage{
-    rpc Get(File) returns (LoremResponse) {}
-    rpc Get(LoremRequest) returns (LoremResponse) {}
+    rpc Create(File) returns (Response) {}
+    rpc Get(Request) returns (File) {}
 }
 
-message LoremRequest {
-    string requestType = 1;
-    int32 min = 2;
-    int32 max = 3;
+message  File{
+    string Filename =1;
+	int64 Size =2 ;
+
+    bytes content =3;
 }
 
-message LoremResponse {
+message Response {
     string message = 1;
     string err = 2;
+}
+message Request{
+    string uuid= 1;
 }

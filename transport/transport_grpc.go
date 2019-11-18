@@ -1,12 +1,29 @@
-package main
+package lorem_grpc
 
 import (
+	"context"
+	"errors"
 	guuid "github.com/google/uuid"
 	"github.com/minio/minio-go/v6"
 	"log"
 )
 
-func main() {
+var (
+	ErrRequestTypeNotFound = errors.New("Request type only valid for word, sentence and paragraph")
+)
+
+// Define service interface
+type Service interface {
+	//
+	Create(ctx context.Context, requestType string, min, max int) (string, error)
+}
+
+// Implement service with empty struct
+type Storage struct {
+}
+
+// Implement service functions
+func (Storage) Create(_ context.Context, requestType string, min, max int) (string, error) {
 	endpoint := "localhost:9001"
 	accessKeyID := "X+qbbAL*mJ:XuOY"
 	secretAccessKey := "7puHEDd5EV7OMH[s02J:5I3iKV*!K"
@@ -35,29 +52,19 @@ func main() {
 		log.Printf("Successfully created %s\n", bucketName)
 	}
 
-	objectName, n := Create(minioClient, bucketName)
-
-	log.Printf("Successfully uploaded %s of size %d\n", objectName, n)
-}
-
-func Create(minioClient *minio.Client, bucketName string) (string, int64) {
 	// Upload the zip file
 	id := guuid.New()
 	objectName := id.String()
 	filePath := "main.go"
 	contentType := "application/zip"
+
 	// Upload the zip file with FPutObject
 	n, err := minioClient.FPutObject(bucketName, objectName, filePath, minio.PutObjectOptions{ContentType: contentType})
 	if err != nil {
 		log.Fatalln(err)
 	}
-	return objectName, n
-}
 
-func Get(minioClient *minio.Client, bucketName string, fileName string) error {
-	err := minioClient.FGetObject(bucketName, fileName, "retrievedObject.go", minio.GetObjectOptions{})
-	if err != nil {
-		log.Fatalln(err)
-	}
-	return err
+	log.Printf("Successfully uploaded %s of size %d\n", objectName, n)
+
+	return objectName, err
 }
